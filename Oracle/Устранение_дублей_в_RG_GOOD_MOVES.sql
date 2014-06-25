@@ -1,0 +1,23 @@
+UPDATE RG_GOOD_MOVES
+SET    C_ACTIVE = 'N'
+WHERE  N_LINE_ID IN (
+  SELECT GM1.N_LINE_ID
+  FROM   RG_GOOD_MOVES   GM1,
+        (SELECT GM.N_OBJECT_ID,
+                GM.N_GOOD_ID,
+                GM.N_RG_LINE_T_ID,
+                GM.N_ADDRESS_ID,
+                MIN(GM.D_BEGIN)  D_BEGIN
+         FROM   RG_GOOD_MOVES   GM
+         WHERE  GM.C_ACTIVE = 'Y'
+         GROUP BY GM.N_OBJECT_ID,
+                GM.N_GOOD_ID,
+                GM.N_RG_LINE_T_ID,
+                GM.N_ADDRESS_ID
+         HAVING COUNT(*) > 1)   DUB
+  WHERE  GM1.N_OBJECT_ID    = DUB.N_OBJECT_ID
+  AND    GM1.N_GOOD_ID      = DUB.N_GOOD_ID
+  AND    GM1.N_RG_LINE_T_ID = DUB.N_RG_LINE_T_ID
+  AND   (GM1.N_ADDRESS_ID   = DUB.N_ADDRESS_ID OR GM1.N_ADDRESS_ID IS NULL AND DUB.N_ADDRESS_ID IS NULL)
+  AND    GM1.D_BEGIN        = DUB.D_BEGIN
+  AND    GM1.C_ACTIVE       = 'Y');
