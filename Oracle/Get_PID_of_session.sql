@@ -14,7 +14,7 @@ select s.sid,
        s.machine,
        s.status,
        p.spid spid,
-       to_char( logon_time, 'Mon dd@hh24:mi') logon_time,
+       to_char( logon_time, 'Mon dd@hh24:mi') logon_time
        rtrim (s.module)||decode( nvl(length( rtrim(s.module)),0),0,'',' ')|| upper(s.program) running,
 from v$session   s,
      v$process   p
