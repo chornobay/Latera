@@ -1,0 +1,56 @@
+-- Поиск пользователей ООС, в сессиях которых был изменен период действия адреса оборудования
+WITH change_addr AS (
+  SELECT N_OBJECT_ID,
+         N_OBJ_ADDRESS_ID,
+         D_LOG_LAST_MOD,
+         D_BEGIN,
+         D_END,
+         N_LOG_SESSION_ID,
+         VC_USER,
+         ROW_NUMBER() OVER (PARTITION BY N_OBJECT_ID, N_OBJ_ADDRESS_ID, D_BEGIN, D_END, N_LOG_SESSION_ID, VC_USER ORDER BY D_END) N_ROW
+  FROM (SELECT OA.N_OBJECT_ID,
+               OA.N_OBJ_ADDRESS_ID,
+               OA.D_LOG_LAST_MOD,
+               OA.D_BEGIN,
+               OA.D_END,
+               OA.N_LOG_SESSION_ID,
+               SI_SUBJECTS_PKG_S.GET_VC_CODE(SL.N_USER_ID) VC_USER
+        FROM SI_V_SUBJECTS S,
+             SI_V_USER_DEVICES UD,
+             SI_OBJ_ADDRESSES OA,
+             SS_SESSION_LOGS SL
+        WHERE S.N_SUBJ_STATE_ID = 4011 -- Отключен
+        AND S.N_SUBJ_TYPE_ID = 2001 -- Абонент
+        AND S.N_SUBJECT_ID = UD.N_SUBJECT_ID
+        AND UD.N_USE_DEVICE_ID = OA.N_OBJECT_ID
+        --AND S.N_SUBJECT_ID = 53648491
+        AND SL.N_SESSION_ID = OA.N_LOG_SESSION_ID
+        UNION ALL
+        SELECT OA.N_OBJECT_ID,
+               OA.N_OBJ_ADDRESS_ID,
+               OA.D_LOG_LAST_MOD,
+               OA.D_BEGIN,
+               OA.D_END,
+               OA.N_LOG_SESSION_ID,
+               SI_SUBJECTS_PKG_S.GET_VC_CODE(SL.N_USER_ID) VC_USER
+        FROM SI_V_SUBJECTS S,
+             SI_V_USER_DEVICES UD,
+             HI_OBJ_ADDRESSES OA,
+             SS_SESSION_LOGS SL
+        WHERE S.N_SUBJ_STATE_ID = 4011 -- Отключен
+        AND S.N_SUBJ_TYPE_ID = 2001 -- Абонент
+        AND S.N_SUBJECT_ID = UD.N_SUBJECT_ID
+        AND UD.N_USE_DEVICE_ID = OA.N_OBJECT_ID
+        --AND S.N_SUBJECT_ID = 53648491
+        AND SL.N_SESSION_ID = OA.N_LOG_SESSION_ID) addr
+  WHERE addr.D_END IS NOT NULL )    
+SELECT SI_SUBJECTS_PKG_S.GET_VC_CODE(SI_OBJECTS_PKG_S.GET_OBJ_OWNER_ID(N_OBJECT_ID)) VC_OWNER,
+       SI_OBJECTS_PKG_S.GET_CODE_BY_ID(N_OBJECT_ID)                                  VC_OBJECT,
+       D_LOG_LAST_MOD,
+       D_BEGIN,
+       D_END,
+       N_LOG_SESSION_ID,
+       VC_USER
+FROM change_addr
+WHERE N_ROW = 1
+ORDER BY N_OBJECT_ID;
