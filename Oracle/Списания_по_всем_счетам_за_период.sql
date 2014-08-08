@@ -4,7 +4,7 @@ WITH accounts AS (
   WHERE N_SUBJECT_ID    = 302
   AND N_ACCOUNT_TYPE_ID = SYS_CONTEXT('CONST', 'ACC_TYPE_Personal')
   AND C_ACTIVE          = 'Y')
-SELECT SUM(D.N_SUM_OUT)   SUM_OUT     -- Итого
+SELECT SUM(D.N_SUM_OUT)   SUM_OUT    -- Итого
 FROM accounts A,
 TABLE (
         SI_USERS_PKG_S.USERS_ACC_DETALIZATION(
@@ -19,14 +19,17 @@ TABLE (
 WHERE D.C_FL_TOTALS = 'N'
 AND   D.N_GOOD_ID IN (
                         SELECT PO_P.N_GOOD_ID
-                        FROM SD_V_PRICE_ORDERS_C    PO_P,
+                        FROM SD_V_INVOICES_C        IC,
+                             SD_V_PRICE_ORDERS_C    PO_P,
                              SD_V_PRICE_ORDERS_C    PO_D
                         WHERE PO_P.N_PAR_LINE_ID IS NULL
-                        AND   PO_D.N_PAR_LINE_ID    = PO_P.N_PRICE_ORDER_LINE_ID
-                        AND   PO_D.N_GOOD_ID        = 40217401  -- Доступ в Интернет
+                        AND   PO_D.N_PAR_LINE_ID      = PO_P.N_PRICE_ORDER_LINE_ID
+                        AND   PO_D.N_GOOD_ID          = 40217401                   -- Доступ в Интернет
+                        AND   IC.N_PRICE_ORDER_DOC_ID = PO_P.N_DOC_ID
+                        AND   IC.N_DOC_ID             = D.N_DOC_ID
                         GROUP BY PO_P.N_GOOD_ID
                         UNION ALL
-                        SELECT 139923101 N_GOOD_ID              -- Пауза
+                        SELECT 139923101 N_GOOD_ID                                 -- Пауза
                         FROM DUAL
                      )
 ;
