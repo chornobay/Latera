@@ -1,7 +1,0 @@
-parameters:
-#    hydra_stomp.example.class: Hydra\Bundle\STOMPBundle\Example
-
-services:
-#    hydra_stomp.example:
-#        class: %hydra_stomp.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
