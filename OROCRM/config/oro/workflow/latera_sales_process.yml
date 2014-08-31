@@ -1,0 +1,13 @@
+imports:
+    - { resource: 'latera_sales_process/steps.yml' }
+    - { resource: 'latera_sales_process/attributes.yml' }
+    - { resource: 'latera_sales_process/transitions.yml' }
+    - { resource: 'latera_sales_process/transition_definitions.yml' }
+
+workflows:
+    latera_sales_process:
+        label: 'Latera Sales Process'
+        entity: OroCRM\Bundle\SalesBundle\Entity\SalesFunnel
+        entity_attribute: sales_funnel
+        #start_step: qualify
+        #steps_display_ordered: true

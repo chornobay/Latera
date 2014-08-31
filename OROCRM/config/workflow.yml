@@ -1,0 +1,4 @@
+imports:
+    - { resource: 'oro/workflow/hydra_lead.yml' }
+#    - { resource: 'oro/workflow/hydra_opportunity.yml' }
+    - { resource: 'oro/workflow/latera_sales_process.yml' }
