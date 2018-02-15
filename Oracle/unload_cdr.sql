@@ -1,5 +1,4 @@
 -- Создаём процедуру WRITE_TO_FILE, если её нет в пакете UTILS_PKG_S
-
 CREATE OR REPLACE PROCEDURE WRITE_TO_FILE(
   vch_VC_LOCATION IN VARCHAR2,
   vch_VC_FILENAME IN VARCHAR2,
@@ -30,7 +29,6 @@ BEGIN
 END WRITE_TO_FILE;
 
 -- Создаём временное представление TT_V_SPEC_FOR_CDR
-
 CREATE OR REPLACE FORCE VIEW TT_V_SPEC_FOR_CDR
 AS
 SELECT N_VALUE_1 N_CDR_ID,         
@@ -91,7 +89,6 @@ WHERE N_VALUE_100 = -100
 /
 
 -- Выгрузка производится с помощью следующего скрипта
-
 DECLARE
   dt_D_BEGIN DATE;
   dt_D_END DATE;
